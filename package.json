@@ -2,11 +2,11 @@
   "name": "mongodb-grades-api",
   "version": "1.0.0",
   "description": "REST API for managing student grades with MongoDB",
-  "main": "index.js",
+  "main": "index.mjs",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "node index.mjs",
+    "dev": "nodemon index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
