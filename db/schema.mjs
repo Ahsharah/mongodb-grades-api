@@ -1,4 +1,3 @@
-cat > db/schema.mjs << 'EOF'
 import getDb from "./conn.mjs";
 
 const gradesValidationSchema = {
@@ -33,7 +32,7 @@ const gradesValidationSchema = {
 
 async function setupSchema() {
     try {
-        const db = getDb();
+        const db = await getDb();
         
         // Create or modify the grades collection with validation
         try {
@@ -72,4 +71,3 @@ async function setupSchema() {
 }
 
 export { setupSchema, gradesValidationSchema };
-EOF

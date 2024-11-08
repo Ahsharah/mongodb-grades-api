@@ -4,29 +4,25 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const connectionString = process.env.MONGODB_URI || "mongodb://localhost:27017/school_db";
+const client = new MongoClient(connectionString);
 
-let db;
+let dbConnection;
 
 async function connectToDatabase() {
     try {
-        const client = new MongoClient(connectionString);
-        await client.connect();
+        const conn = await client.connect();
+        dbConnection = conn.db("school_db");
         console.log("Successfully connected to MongoDB.");
-        
-        db = client.db("school_db");
-        return db;
+        return dbConnection;
     } catch (error) {
         console.error("Could not connect to MongoDB:", error);
         process.exit(1);
     }
 }
 
-// Initialize connection
-connectToDatabase();
-
-export default function getDb() {
-    if (!db) {
-        throw new Error("Database not initialized");
+export default async function getDb() {
+    if (!dbConnection) {
+        dbConnection = await connectToDatabase();
     }
-    return db;
+    return dbConnection;
 }

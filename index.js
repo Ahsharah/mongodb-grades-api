@@ -29,7 +29,7 @@ initializeDb();
 // Basic test route
 app.get("/", async (req, res) => {
     try {
-        const db = getDb();
+        const db = await getDb();
         // Test inserting a document that should pass validation
         const testGrade = {
             class_id: 101,
