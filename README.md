@@ -1,6 +1,6 @@
 # Grades API
 
-A robust REST API for managing student grades with MongoDB, featuring advanced aggregation pipelines and data validation.
+A robust REST API for managing student grades with MongoDB, featuring advanced aggregation pipelines and data validation. Assistetd by Preply platform.
 
 ## Features
 
