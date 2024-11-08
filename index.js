@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import getDb from "./db/conn.mjs";
 import { setupSchema } from "./db/schema.mjs";
+import gradesRoutes from "./routes/grades.js";
 
 // Load environment variables
 dotenv.config();
@@ -26,29 +27,12 @@ async function initializeDb() {
 // Call initialize function
 initializeDb();
 
+// Mount routes
+app.use("/grades", gradesRoutes);
+
 // Basic test route
-app.get("/", async (req, res) => {
-    try {
-        const db = await getDb();
-        // Test inserting a document that should pass validation
-        const testGrade = {
-            class_id: 101,
-            learner_id: 1,
-            score: 85.5,
-            timestamp: new Date()
-        };
-        
-        const result = await db.collection("grades").insertOne(testGrade);
-        res.json({
-            message: "MongoDB connection and schema validation are working!",
-            insertedId: result.insertedId
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "Error testing database connection",
-            error: error.message
-        });
-    }
+app.get("/", (req, res) => {
+    res.send("Grades API is running!");
 });
 
 // Global error handling
