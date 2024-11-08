@@ -1,123 +1,133 @@
-# Grades API
+# Student Grades API
 
-A robust REST API for managing student grades with MongoDB, featuring advanced aggregation pipelines and data validation. Assistetd by Preply platform.
+A RESTful API for managing student grades using MongoDB and Mongoose. Built as part of the Per Scholas MongoDB Course, this API demonstrates the transition from MongoDB Node driver to Mongoose while maintaining robust functionality for grade management and statistical analysis.
 
 ## Features
 
-- **Grade Statistics**
-  - Calculate overall grade statistics across all classes
-  - View statistics for specific classes
-  - Track students performing above 70% threshold
+### Core Functionality
+- Complete CRUD operations for grade management
+- Statistical analysis across all grades and per class
+- Performance tracking with student achievement metrics
+- Automated timestamp tracking
 
-- **Data Validation**
-  - Enforces valid class IDs (0-300)
-  - Ensures valid learner IDs (≥ 0)
-  - Includes timestamp tracking
-  - Warning-based validation for flexible data handling
-
-- **Performance Optimization**
-  - Indexed queries for class_id and learner_id
-  - Compound index for combined queries
-  - Efficient aggregation pipelines
+### Technical Implementation
+- MongoDB schema validation and data integrity
+- Optimized database queries with proper indexing
+- Advanced aggregation pipelines for statistics
+- ESM Modules architecture
 
 ## API Endpoints
 
 ### Statistics Routes
-- `GET /grades/stats` - Get overall grade statistics
+- `GET /grades/stats` - Retrieve overall grade statistics
 - `GET /grades/stats/:id` - Get statistics for a specific class
 
 ### CRUD Operations
 - `GET /grades` - Retrieve all grades
 - `POST /grades` - Create a new grade
-- `PUT /grades/:id` - Update a grade
-- `DELETE /grades/:id` - Delete a grade
+- `PUT /grades/:id` - Update an existing grade
+- `DELETE /grades/:id` - Remove a grade
 
-## Technical Implementation
+## MongoDB Schema
 
-### MongoDB Schema
 ```javascript
-{
+const gradeSchema = new mongoose.Schema({
   class_id: {
-    bsonType: "int",
-    minimum: 0,
-    maximum: 300
+    type: Number,
+    required: true,
+    min: 0,
+    max: 300
   },
   learner_id: {
-    bsonType: "int",
-    minimum: 0
+    type: Number,
+    required: true,
+    min: 0
   },
   score: {
-    bsonType: "double",
-    minimum: 0,
-    maximum: 100
+    type: Number,
+    required: true,
+    min: 0,
+    max: 100
   },
   timestamp: {
-    bsonType: "date"
+    type: Date,
+    default: Date.now
   }
-}
+});
 ```
 
-### Project Structure
+## Project Structure
 ```
 mongodb-grades-api/
 ├── db/
-│   ├── conn.mjs       # Database connection
-│   └── schema.mjs     # Schema validation
+│   └── conn.mjs         # Mongoose connection setup
+├── models/
+│   └── grade.mjs        # Grade schema and model
 ├── routes/
-│   └── grades.js      # API routes
-├── index.js           # Application entry
-└── README.md         # Documentation
+│   └── grades.mjs       # API endpoints
+├── index.mjs            # Application entry point
+├── package.json
+└── .env
 ```
 
 ## Getting Started
 
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Set up environment variables:
-   ```
-   MONGODB_URI=your_mongodb_connection_string
-   PORT=5050
-   ```
-4. Run the server:
-   ```bash
-   npm run dev
-   ```
-
-## Example Requests
-
-### Get Overall Statistics
+1. Clone the repository:
 ```bash
-curl http://localhost:5050/grades/stats
+git clone [your-repository-url]
+cd mongodb-grades-api
 ```
 
-### Create Grade
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Configure environment variables in `.env`:
+```
+MONGODB_URI=mongodb://localhost:27017/school_db
+PORT=5050
+```
+
+4. Start the development server:
+```bash
+npm run dev
+```
+
+## API Usage Examples
+
+### Create a New Grade
 ```bash
 curl -X POST http://localhost:5050/grades \
 -H "Content-Type: application/json" \
 -d '{
-  "class_id": 101,
-  "learner_id": 1,
-  "score": 85.5
+  "learner_id": 123,
+  "class_id": 100,
+  "score": 85
 }'
 ```
 
-## Technologies Used
+### Get Class Statistics
+```bash
+curl http://localhost:5050/grades/stats/100
+```
 
+## Technologies Used
 - Node.js
 - Express.js
 - MongoDB
-- MongoDB Aggregation Framework
-- Git for version control
+- Mongoose
+- ES Modules
 
-## Development Practices
-
-- Modular code organization
-- Comprehensive error handling
-- MongoDB best practices for indexing and validation
+## Development Features
+- Modern JavaScript with ES Modules
 - RESTful API design principles
+- Comprehensive error handling
+- MongoDB/Mongoose best practices
+- Data validation and sanitization
+
+## Author
+Developed by Alexandria W. for the Per Scholas MongoDB Course
 
 ---
-Developed by Alexandria for Per Scholas MongoDB Course
+For more information about Per Scholas courses, visit [Per Scholas](https://perscholas.org)
