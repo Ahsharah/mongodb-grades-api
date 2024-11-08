@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-import db from "./db/conn.mjs";
+import getDb from "./db/conn.mjs";
 
 // Load environment variables
 dotenv.config();
@@ -12,8 +12,13 @@ const PORT = process.env.PORT || 5050;
 app.use(express.json());
 
 // Basic test route
-app.get("/", (req, res) => {
-    res.send("Welcome to the Grades API");
+app.get("/", async (req, res) => {
+    try {
+        const db = getDb();
+        res.send("Successfully connected to MongoDB!");
+    } catch (error) {
+        res.status(500).send("Database connection not ready");
+    }
 });
 
 // Global error handling
