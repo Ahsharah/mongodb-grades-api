@@ -1,16 +1,13 @@
+// routes/grades.mjs
 import express from 'express';
-import { ObjectId } from 'mongodb';
-import getDb from '../db/conn.mjs';
+import Grade from '../models/grade.mjs';
 
 const router = express.Router();
 
 // GET /grades/stats - Get overall statistics
 router.get('/stats', async (req, res) => {
     try {
-        const db = await getDb();
-        const collection = db.collection('grades');
-        
-        const pipeline = [
+        const result = await Grade.aggregate([
             {
                 $group: {
                     _id: "$learner_id",
@@ -47,9 +44,8 @@ router.get('/stats', async (req, res) => {
                     }
                 }
             }
-        ];
-
-        const result = await collection.aggregate(pipeline).toArray();
+        ]);
+        
         res.json(result[0] || { studentsAbove70: 0, totalStudents: 0, percentage: 0 });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -59,11 +55,9 @@ router.get('/stats', async (req, res) => {
 // GET /grades/stats/:id - Get statistics for a specific class
 router.get('/stats/:id', async (req, res) => {
     try {
-        const db = await getDb();
-        const collection = db.collection('grades');
         const classId = parseInt(req.params.id);
         
-        const pipeline = [
+        const result = await Grade.aggregate([
             {
                 $match: { class_id: classId }
             },
@@ -103,9 +97,8 @@ router.get('/stats/:id', async (req, res) => {
                     }
                 }
             }
-        ];
+        ]);
 
-        const result = await collection.aggregate(pipeline).toArray();
         res.json(result[0] || { 
             studentsAbove70: 0, 
             totalStudents: 0, 
@@ -117,14 +110,10 @@ router.get('/stats/:id', async (req, res) => {
     }
 });
 
-// Let's also add basic CRUD operations for completeness
-
 // GET /grades - Get all grades
 router.get('/', async (req, res) => {
     try {
-        const db = await getDb();
-        const collection = db.collection('grades');
-        const results = await collection.find({}).toArray();
+        const results = await Grade.find({});
         res.json(results);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -134,13 +123,11 @@ router.get('/', async (req, res) => {
 // POST /grades - Create a new grade
 router.post('/', async (req, res) => {
     try {
-        const db = await getDb();
-        const collection = db.collection('grades');
-        const grade = {
+        const grade = new Grade({
             ...req.body,
             timestamp: new Date()
-        };
-        const result = await collection.insertOne(grade);
+        });
+        const result = await grade.save();
         res.status(201).json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -150,11 +137,10 @@ router.post('/', async (req, res) => {
 // PUT /grades/:id - Update a grade
 router.put('/:id', async (req, res) => {
     try {
-        const db = await getDb();
-        const collection = db.collection('grades');
-        const result = await collection.updateOne(
-            { _id: new ObjectId(req.params.id) },
-            { $set: req.body }
+        const result = await Grade.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
         );
         res.json(result);
     } catch (error) {
@@ -165,11 +151,7 @@ router.put('/:id', async (req, res) => {
 // DELETE /grades/:id - Delete a grade
 router.delete('/:id', async (req, res) => {
     try {
-        const db = await getDb();
-        const collection = db.collection('grades');
-        const result = await collection.deleteOne({
-            _id: new ObjectId(req.params.id)
-        });
+        const result = await Grade.findByIdAndDelete(req.params.id);
         res.json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
